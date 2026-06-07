@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>家事單字決鬥王 v1.1</title>
+<style>
+body{
+margin:0;padding:12px;
+font-family:"Microsoft JhengHei",sans-serif;
+background:linear-gradient(180deg,#8fd3ff,#ffd6e7);
+}
+.title{
+text-align:center;color:white;font-size:2rem;font-weight:bold;margin:10px 0;
+}
+.rule,.player,.word,button{
+border-radius:16px;
+}
+.rule,.player,.word{
+background:white;padding:12px;margin-bottom:10px;
+}
+.activeA{border:4px solid #4da3ff;}
+.activeB{border:4px solid #ff7eb2;}
+.word{
+font-size:2rem;font-weight:bold;text-align:center;
+}
+.choices{
+display:grid;grid-template-columns:1fr 1fr;gap:10px;
+}
+button{
+border:none;padding:16px;font-size:1.1rem;font-weight:bold;background:white;
+}
+.turn{
+text-align:center;font-size:1.2rem;font-weight:bold;margin:10px 0;
+}
+.hp{font-size:1.5rem;word-break:break-all;}
+</style>
+</head>
+<body>
+
+<div class="title">🏆 家事單字決鬥王 🏆</div>
+
+<div class="rule">
+🦁 Hanson（成功高中代表） VS 🐰 Amber（北成國小代表）<br><br>
+📖 遊戲規則<br>
+✅ 答對 ❤️ +1<br>
+❌ 答錯 ❤️ -1<br>
+🎯 先獲得 ❤️10 顆者獲勝
+</div>
+
+<div id="A" class="player activeA">
+<h3>🦁 Hanson</h3>
+<div id="hpA" class="hp">❤️❤️❤️❤️❤️</div>
+</div>
+
+<div id="B" class="player">
+<h3>🐰 Amber</h3>
+<div id="hpB" class="hp">❤️❤️❤️❤️❤️</div>
+</div>
+
+<div id="turn" class="turn">🟦 Hanson 回合</div>
+
+<div id="word" class="word"></div>
+
+<div id="choices" class="choices"></div>
+
+<script>
+const words=[
+{w:"abandon",a:"放棄",o:["借用","到達","完成"]},
+{w:"borrow",a:"借用",o:["放棄","創造","達成"]},
+{w:"achieve",a:"達成",o:["借用","放棄","到達"]},
+{w:"discover",a:"發現",o:["借用","完成","放棄"]},
+{w:"create",a:"創造",o:["借用","發現","到達"]}
+];
+
+let hpA=5,hpB=5,turn="A",current;
+
+function hearts(n){return "❤️".repeat(Math.max(0,n));}
+
+function loadQ(){
+current=words[Math.floor(Math.random()*words.length)];
+document.getElementById("word").innerText=current.w;
+
+let c=[current.a,...current.o].sort(()=>Math.random()-0.5);
+document.getElementById("choices").innerHTML =
+c.map(x=>`<button onclick="answer('${x}')">${x}</button>`).join("");
+}
+
+function updateTurn(){
+A.className="player";
+B.className="player";
+
+if(turn==="A"){
+A.classList.add("activeA");
+turnDiv.innerText="🟦 Hanson 回合";
+}else{
+B.classList.add("activeB");
+turnDiv.innerText="🩷 Amber 回合";
+}
+}
+
+function showWinner(name,other){
+alert(
+`🎉 WINNER 🎉\n\n${name} 獲勝！\n\n🎁 本次獎勵\n🍽️ 指定 ${other} 洗碗一次\n\n🏆 單字決鬥王`
+);
+location.reload();
+}
+
+function showLoser(name){
+alert(
+`😭 GAME OVER\n\n${name}\n\n🧺 本次任務\n洗衣服一次`
+);
+location.reload();
+}
+
+function answer(v){
+let ok=v===current.a;
+
+if(turn==="A"){
+hpA += ok ? 1 : -1;
+hpA=Math.max(0,hpA);
+hpAEl.innerText=hearts(hpA);
+}else{
+hpB += ok ? 1 : -1;
+hpB=Math.max(0,hpB);
+hpBEl.innerText=hearts(hpB);
+}
+
+if(hpA>=10) showWinner("Hanson","Amber");
+if(hpB>=10) showWinner("Amber","Hanson");
+
+if(hpA<=0) showLoser("Hanson");
+if(hpB<=0) showLoser("Amber");
+
+turn = turn==="A" ? "B" : "A";
+updateTurn();
+loadQ();
+}
+
+const hpAEl=document.getElementById("hpA");
+const hpBEl=document.getElementById("hpB");
+const turnDiv=document.getElementById("turn");
+const A=document.getElementById("A");
+const B=document.getElementById("B");
+
+updateTurn();
+loadQ();
+</script>
+</body>
+</html>
