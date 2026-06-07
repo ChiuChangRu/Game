@@ -267,20 +267,77 @@ body::before{
    （目前是你上傳範本的單字，未更動）
    ========================================================= */
 const WORD_BANK = {
+  // ★ 每個字自帶 near = 3 個「意思相近但不同」的干擾選項
   juniorWords:[
-    {word:"abandon",meaning:"放棄"},{word:"achieve",meaning:"達成"},
-    {word:"borrow",meaning:"借用"},{word:"airport",meaning:"機場"},
-    {word:"mountain",meaning:"山"},{word:"country",meaning:"國家"},
-    {word:"travel",meaning:"旅行"}
+    {word:"abandon",meaning:"放棄",near:["拒絕","忽視","延後"]},
+    {word:"achieve",meaning:"達成",near:["嘗試","追求","安排"]},
+    {word:"borrow",meaning:"借用",near:["購買","歸還","捐贈"]},
+    {word:"arrive",meaning:"抵達",near:["出發","離開","停留"]},
+    {word:"depart",meaning:"出發",near:["抵達","迷路","等待"]},
+    {word:"return",meaning:"返回",near:["前進","前往","逃跑"]},
+    {word:"escape",meaning:"逃跑",near:["追趕","躲藏","投降"]},
+    {word:"travel",meaning:"旅行",near:["居住","搬家","通勤"]},
+    {word:"mountain",meaning:"山",near:["河流","山谷","平原"]},
+    {word:"river",meaning:"河流",near:["湖泊","海洋","沙漠"]},
+    {word:"ocean",meaning:"海洋",near:["沙漠","森林","草原"]},
+    {word:"forest",meaning:"森林",near:["沙漠","沼澤","農田"]},
+    {word:"desert",meaning:"沙漠",near:["叢林","沼澤","草原"]},
+    {word:"island",meaning:"島嶼",near:["半島","海岸","洞穴"]},
+    {word:"airport",meaning:"機場",near:["車站","港口","碼頭"]},
+    {word:"station",meaning:"車站",near:["機場","碼頭","倉庫"]},
+    {word:"hospital",meaning:"醫院",near:["學校","警察局","銀行"]},
+    {word:"library",meaning:"圖書館",near:["博物館","體育館","劇院"]},
+    {word:"market",meaning:"市場",near:["工廠","農場","倉庫"]},
+    {word:"factory",meaning:"工廠",near:["農場","商店","辦公室"]},
+    {word:"brave",meaning:"勇敢的",near:["誠實的","友善的","聰明的"]},
+    {word:"honest",meaning:"誠實的",near:["勇敢的","慷慨的","謙虛的"]},
+    {word:"lazy",meaning:"懶惰的",near:["粗心的","自私的","急躁的"]},
+    {word:"polite",meaning:"有禮貌的",near:["友善的","安靜的","害羞的"]},
+    {word:"shy",meaning:"害羞的",near:["安靜的","緊張的","孤單的"]},
+    {word:"generous",meaning:"慷慨的",near:["友善的","誠實的","耐心的"]},
+    {word:"curious",meaning:"好奇的",near:["聰明的","興奮的","困惑的"]},
+    {word:"nervous",meaning:"緊張的",near:["害怕的","興奮的","生氣的"]},
+    {word:"proud",meaning:"驕傲的",near:["開心的","滿足的","感激的"]},
+    {word:"bored",meaning:"無聊的",near:["疲倦的","難過的","失望的"]},
+    {word:"excited",meaning:"興奮的",near:["緊張的","驚訝的","好奇的"]},
+    {word:"lonely",meaning:"孤單的",near:["難過的","害羞的","無聊的"]},
+    {word:"decide",meaning:"決定",near:["懷疑","拒絕","猜測"]},
+    {word:"promise",meaning:"承諾",near:["拒絕","警告","抱怨"]},
+    {word:"prepare",meaning:"準備",near:["完成","取消","修理"]},
+    {word:"improve",meaning:"改善",near:["破壞","維持","減少"]},
+    {word:"country",meaning:"國家",near:["城市","村莊","城鎮"]}
   ],
   seniorWords:[
-    {word:"versatile",meaning:"多才多藝的"},{word:"meticulous",meaning:"一絲不苟的"},
-    {word:"inevitable",meaning:"不可避免的"},{word:"conspicuous",meaning:"顯眼的"},
-    {word:"comprehensive",meaning:"全面的"},{word:"sophisticated",meaning:"複雜精密的"}
-  ],
-  cities:[
-    {word:"Tokyo",meaning:"東京"},{word:"London",meaning:"倫敦"},
-    {word:"Paris",meaning:"巴黎"},{word:"New York",meaning:"紐約"},{word:"Seoul",meaning:"首爾"}
+    {word:"versatile",meaning:"多才多藝的",near:["固執的","謹慎的","坦率的"]},
+    {word:"meticulous",meaning:"一絲不苟的",near:["草率的","大方的","急躁的"]},
+    {word:"inevitable",meaning:"不可避免的",near:["不尋常的","不公平的","不確定的"]},
+    {word:"conspicuous",meaning:"顯眼的",near:["隱密的","普通的","短暫的"]},
+    {word:"comprehensive",meaning:"全面的",near:["片面的","簡短的","模糊的"]},
+    {word:"sophisticated",meaning:"複雜精密的",near:["簡陋的","粗糙的","陳舊的"]},
+    {word:"ambitious",meaning:"有抱負的",near:["謙虛的","懶散的","知足的"]},
+    {word:"diligent",meaning:"勤奮的",near:["散漫的","粗心的","膽小的"]},
+    {word:"cautious",meaning:"謹慎的",near:["魯莽的","大膽的","隨意的"]},
+    {word:"rigorous",meaning:"嚴格的",near:["寬鬆的","隨便的","溫和的"]},
+    {word:"obvious",meaning:"明顯的",near:["隱晦的","複雜的","罕見的"]},
+    {word:"subtle",meaning:"微妙的",near:["明顯的","粗暴的","強烈的"]},
+    {word:"profound",meaning:"深刻的",near:["膚淺的","短暫的","普通的"]},
+    {word:"probable",meaning:"很可能的",near:["不可能的","罕見的","意外的"]},
+    {word:"feasible",meaning:"可行的",near:["困難的","危險的","昂貴的"]},
+    {word:"accumulate",meaning:"累積",near:["消耗","分配","浪費"]},
+    {word:"diminish",meaning:"減少",near:["增加","維持","扭曲"]},
+    {word:"anticipate",meaning:"預期",near:["回憶","忽略","否認"]},
+    {word:"emphasize",meaning:"強調",near:["隱瞞","忽視","質疑"]},
+    {word:"undermine",meaning:"削弱",near:["鞏固","支持","建立"]},
+    {word:"justify",meaning:"為…辯護",near:["譴責","懷疑","反駁"]},
+    {word:"consequence",meaning:"後果",near:["原因","過程","目的"]},
+    {word:"hypothesis",meaning:"假設",near:["結論","事實","證據"]},
+    {word:"controversy",meaning:"爭議",near:["共識","結論","妥協"]},
+    {word:"phenomenon",meaning:"現象",near:["原則","理論","規則"]},
+    {word:"dilemma",meaning:"兩難",near:["解答","機會","優勢"]},
+    {word:"tedious",meaning:"乏味的",near:["有趣的","困難的","重要的"]},
+    {word:"arrogant",meaning:"傲慢的",near:["謙虛的","友善的","膽怯的"]},
+    {word:"reluctant",meaning:"不情願的",near:["渴望的","樂意的","急切的"]},
+    {word:"abundant",meaning:"豐富的",near:["稀少的","昂貴的","微小的"]}
   ],
   settings:{Hanson:{junior_ratio:0.4,senior_ratio:0.6}, Amber:{junior_ratio:1.0,senior_ratio:0.0}}
 };
@@ -296,6 +353,7 @@ let turn="A";
 let qNo=0;               // 已作答題數
 let sd=false;            // 驟死賽
 let current=null, busy=false, timerOn=true, toTimer=null;
+let used=new Set();      // 同一場已出過的字，避免重複
 
 const $=id=>document.getElementById(id);
 const rand=a=>a[Math.floor(Math.random()*a.length)];
@@ -360,12 +418,19 @@ $("musicBtn").addEventListener("click",toggleMusic);
 function pickWord(){
   const s=WORD_BANK.settings[P[turn].key]||{senior_ratio:0};
   const useSenior=WORD_BANK.seniorWords.length && Math.random()<(s.senior_ratio||0);
-  return rand(useSenior?WORD_BANK.seniorWords:WORD_BANK.juniorWords);
+  const pool=useSenior?WORD_BANK.seniorWords:WORD_BANK.juniorWords;
+  let avail=pool.filter(w=>!used.has(w.word));
+  if(avail.length===0){ pool.forEach(w=>used.delete(w.word)); avail=pool.slice(); } // 整池出完才重置
+  const w=rand(avail); used.add(w.word); return w;
 }
 function buildChoices(q){
-  const all=[...WORD_BANK.juniorWords,...WORD_BANK.seniorWords,...(WORD_BANK.cities||[])];
-  const o=[q.meaning]; let g=0;
-  while(o.length<4 && g++<300){ const w=rand(all).meaning; if(!o.includes(w))o.push(w); }
+  const o=[q.meaning];
+  const near=(q.near||[]).slice().sort(()=>Math.random()-0.5);
+  for(const m of near){ if(o.length>=4) break; if(!o.includes(m)) o.push(m); }
+  if(o.length<4){ // 萬一相近選項不足，從全字庫補
+    const all=[...WORD_BANK.juniorWords,...WORD_BANK.seniorWords]; let g=0;
+    while(o.length<4 && g++<300){ const m=rand(all).meaning; if(!o.includes(m)) o.push(m); }
+  }
   return o.sort(()=>Math.random()-0.5);
 }
 function paintProgress(){
@@ -487,7 +552,7 @@ function confetti(){
 
 /* 開始 / 重來 */
 function resetState(){
-  score={A:0,B:0}; turn="A"; qNo=0; sd=false; busy=false; current=null;
+  score={A:0,B:0}; turn="A"; qNo=0; sd=false; busy=false; current=null; used.clear();
   paintScore("A"); paintScore("B"); $("scoreA").classList.remove("bump"); $("scoreB").classList.remove("bump");
 }
 function begin(){
