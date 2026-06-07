@@ -94,6 +94,8 @@ body::before{
 .fighter:not(.active){filter:saturate(.75) brightness(.85);}
 .fighter.active .avatar{animation:bob 1.1s ease-in-out infinite;}
 @keyframes bob{50%{transform:translateY(-5px)}}
+.fighter.spop{animation:spop .4s;}
+@keyframes spop{35%{background:rgba(255,255,255,.18);}}
 .fighter.correct .avatar{animation:cheer .5s;}
 @keyframes cheer{30%{transform:translateY(-10px) scale(1.1) rotate(-4deg)}60%{transform:translateY(-4px) rotate(3deg)}}
 .fighter.wrongf .avatar{animation:nono .45s;}
@@ -353,6 +355,7 @@ let turn="A";
 let qNo=0;               // 已作答題數
 let sd=false;            // 驟死賽
 let current=null, busy=false, timerOn=true, toTimer=null;
+let timerSoundSeq=0;
 let used=new Set();      // 同一場已出過的字，避免重複
 
 const $=id=>document.getElementById(id);
@@ -361,7 +364,14 @@ const other=t=>t==="A"?"B":"A";
 
 /* 音效 */
 let AC=null;
-function initAudio(){ if(!AC){ try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } }
+function initAudio(){
+  if(!AC){ try{ AC=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return; } }
+  if(AC.state==='suspended') AC.resume();
+  try{
+    const b=AC.createBuffer(1,1,22050), s=AC.createBufferSource();
+    s.buffer=b; s.connect(AC.destination); s.start(0);
+  }catch(e){}
+}
 function beep(f,d,t="square",v=0.18,w=0){ if(!AC)return; const s=AC.currentTime+w,o=AC.createOscillator(),g=AC.createGain();
   o.type=t;o.frequency.setValueAtTime(f,s);o.connect(g);g.connect(AC.destination);
   g.gain.setValueAtTime(0.0001,s);g.gain.exponentialRampToValueAtTime(v,s+0.012);g.gain.exponentialRampToValueAtTime(0.0001,s+d);
@@ -403,14 +413,27 @@ function bgmPlayStep(i,t){
   if(i%4===2) STABS[half].forEach(f=>bgmTone(f,BGM_STEP*0.9,"square",0.05,t)); // 和弦「恰」
   hat(t, i%4===2?0.05:0.03);                                    // 輕節奏
 }
-function bgmSchedule(){ while(bgmNext < AC.currentTime+0.12){ bgmPlayStep(bgmStep,bgmNext); bgmNext+=BGM_STEP; bgmStep=(bgmStep+1)%LEAD.length; } }
+function bgmSchedule(){ if(!AC||AC.state==='suspended') return; while(bgmNext < AC.currentTime+0.12){ bgmPlayStep(bgmStep,bgmNext); bgmNext+=BGM_STEP; bgmStep=(bgmStep+1)%LEAD.length; } }
 function startBGM(){ if(!AC||bgmTimer) return; ensureBgmGain(); makeNoise(); bgmNext=AC.currentTime+0.08; bgmStep=0; bgmTimer=setInterval(bgmSchedule,25); }
 function stopBGM(){ clearInterval(bgmTimer); bgmTimer=null; }
+function scheduleCountdownBeeps(){
+  if(!timerOn) return;
+  const seq=++timerSoundSeq;
+  const fire=(ms,fn)=>setTimeout(()=>{ if(timerSoundSeq===seq && AC && AC.state!=='suspended') fn(); },ms);
+  fire(3000, ()=>beep(440,0.07,'sine',0.07));
+  fire(6000, ()=>beep(440,0.07,'sine',0.07));
+  fire(9000, ()=>beep(660,0.11,'square',0.14));
+  fire(10000,()=>beep(770,0.11,'square',0.15));
+  fire(11000,()=>beep(880,0.14,'square',0.18));
+  fire(12000,()=>{ beep(440,0.07,'square',0.2); beep(440,0.07,'square',0.2,0.09); beep(330,0.22,'sawtooth',0.18,0.18); });
+}
 function toggleMusic(){
-  initAudio(); ensureBgmGain();
+  initAudio();
+  if(AC && AC.state==='suspended') AC.resume();
+  ensureBgmGain();
   bgmMuted=!bgmMuted; bgmGain.gain.value=bgmMuted?0:0.10;
   const b=$("musicBtn"); b.textContent=bgmMuted?"🔇":"🔊"; b.classList.toggle("off",bgmMuted);
-  if(!bgmMuted && !bgmTimer) startBGM();
+  if(!bgmMuted && !bgmTimer){ if(AC) AC.resume().then(()=>startBGM()); }
 }
 $("musicBtn").addEventListener("click",toggleMusic);
 
@@ -468,15 +491,18 @@ function startTimer(){
   f.style.animation="none"; f.classList.remove("run"); void f.offsetWidth;
   f.style.animationDuration=(QTIME/1000)+"s"; f.classList.add("run");
   clearTimeout(toTimer); toTimer=setTimeout(()=>{ if(!busy) answer(null,"__timeout__"); },QTIME);
+  scheduleCountdownBeeps();
 }
-function stopTimer(){ clearTimeout(toTimer); $("timerfill").classList.remove("run"); $("timerfill").style.animation="none"; }
+function stopTimer(){ clearTimeout(toTimer); timerSoundSeq++; $("timerfill").classList.remove("run"); $("timerfill").style.animation="none"; }
 
 /* 計分顯示 */
 function paintScore(k){
   const el=$("score"+k), v=score[k];
   el.textContent=(v>0?"+":"")+v;
-  el.className="score "+(v>0?"pos":v<0?"neg":"zero")+" bump";
-  el.style.animation="none"; void el.offsetWidth; el.style.animation="";
+  const cls="score "+(v>0?"pos":v<0?"neg":"zero");
+  el.className=cls; void el.offsetWidth; el.className=cls+" bump";
+  const card=$("f"+k);
+  card.classList.remove("spop"); void card.offsetWidth; card.classList.add("spop");
 }
 function floatFx(k,text,dir){
   const el=document.createElement("div");
@@ -559,12 +585,13 @@ function begin(){
   initAudio(); timerOn=$("timerToggle").checked;
   resetState();
   $("startScreen").classList.add("hide"); $("winScreen").classList.add("hide");
-  startBGM();
+  if(AC){ stopBGM(); AC.resume().then(()=>startBGM()); }
   newQuestion();
 }
 $("startBtn").addEventListener("click",()=>{ sClick(); begin(); });
 $("rematchBtn").addEventListener("click",()=>{ sClick(); $("winScreen").classList.add("hide"); $("startScreen").classList.remove("hide"); });
 
+document.addEventListener('touchstart',()=>{ if(AC&&AC.state==='suspended') AC.resume(); },{passive:true});
 /* 初始：載入人像 */
 $("avA").src=IMG.A; $("avB").src=IMG.B; $("vsA").src=IMG.A; $("vsB").src=IMG.B;
 paintScore("A"); paintScore("B"); paintProgress();
