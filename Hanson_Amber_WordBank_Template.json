@@ -1,0 +1,90 @@
+{
+  "juniorWords": [
+    {
+      "word": "abandon",
+      "meaning": "放棄"
+    },
+    {
+      "word": "achieve",
+      "meaning": "達成"
+    },
+    {
+      "word": "borrow",
+      "meaning": "借用"
+    },
+    {
+      "word": "airport",
+      "meaning": "機場"
+    },
+    {
+      "word": "mountain",
+      "meaning": "山"
+    },
+    {
+      "word": "country",
+      "meaning": "國家"
+    },
+    {
+      "word": "travel",
+      "meaning": "旅行"
+    }
+  ],
+  "seniorWords": [
+    {
+      "word": "versatile",
+      "meaning": "多才多藝的"
+    },
+    {
+      "word": "meticulous",
+      "meaning": "一絲不苟的"
+    },
+    {
+      "word": "inevitable",
+      "meaning": "不可避免的"
+    },
+    {
+      "word": "conspicuous",
+      "meaning": "顯眼的"
+    },
+    {
+      "word": "comprehensive",
+      "meaning": "全面的"
+    },
+    {
+      "word": "sophisticated",
+      "meaning": "複雜精密的"
+    }
+  ],
+  "cities": [
+    {
+      "word": "Tokyo",
+      "meaning": "東京"
+    },
+    {
+      "word": "London",
+      "meaning": "倫敦"
+    },
+    {
+      "word": "Paris",
+      "meaning": "巴黎"
+    },
+    {
+      "word": "New York",
+      "meaning": "紐約"
+    },
+    {
+      "word": "Seoul",
+      "meaning": "首爾"
+    }
+  ],
+  "settings": {
+    "Hanson": {
+      "junior_ratio": 0.4,
+      "senior_ratio": 0.6
+    },
+    "Amber": {
+      "junior_ratio": 1.0,
+      "senior_ratio": 0.0
+    }
+  }
+}
